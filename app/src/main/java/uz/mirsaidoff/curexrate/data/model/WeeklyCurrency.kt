@@ -14,5 +14,5 @@ class WeeklyCurrency(
                 it.key,
                 it.value.map { rate -> Rate(title = rate.key, rate = rate.value) }[0]
             )
-        } ?: listOf()
+        }?.sortedBy { it.date } ?: listOf()
 }

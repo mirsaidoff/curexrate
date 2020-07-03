@@ -37,6 +37,9 @@ class Repository(
         } else throw Exception("Cannot get latest updates from server. Please try again!")
     }
 
-    private suspend fun updateDBValues(updatedRates: List<Rate>) = dao.add(updatedRates)
+    private suspend fun updateDBValues(updatedRates: List<Rate>) {
+        dao.removeAll()
+        dao.add(updatedRates)
+    }
 
 }

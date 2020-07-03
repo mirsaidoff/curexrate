@@ -8,26 +8,42 @@
     android:padding="8dp"
     tools:context=".ui.MainFragment">
 
+    <!--    todo make it spinner so that user can choose other currencies-->
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tv_base"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="10dp"
         android:text="Base currency: USD"
         android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@id/rv_main"
+        app:layout_constraintBottom_toTopOf="@id/fl_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_main"
+    <FrameLayout
+        android:id="@+id/fl_content"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_base" />
+        app:layout_constraintTop_toBottomOf="@id/tv_base">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/progress"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center"
+            android:indeterminate="true" />
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

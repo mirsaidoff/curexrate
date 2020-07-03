@@ -3,8 +3,10 @@ package uz.mirsaidoff.curexrate.ui
 import android.content.Context
 import android.os.Bundle
 import android.view.*
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.main_fragment.*
 import org.koin.android.ext.android.inject
@@ -24,6 +26,7 @@ class MainFragment : Fragment(R.layout.main_fragment) {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is NavigationListener) listener = context
+        setHasOptionsMenu(true)
     }
 
     override fun onDetach() {
@@ -45,17 +48,23 @@ class MainFragment : Fragment(R.layout.main_fragment) {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewAdapter = MainViewAdapter(listener)
+        viewAdapter = MainViewAdapter(requireContext(), listener)
         rv_main.adapter = viewAdapter
-        rv_main.layoutManager = LinearLayoutManager(context)
+        rv_main.layoutManager = GridLayoutManager(context, 2)
 
         initSubscriptions()
         viewModel.getLatestExchangeRates(false)
     }
 
     private fun initSubscriptions() {
-        viewModel.resultLiveData.observe(viewLifecycleOwner) { viewAdapter.setItems(it) }
-        viewModel.errorLiveData.observe(viewLifecycleOwner) { requireContext().showAlertDialog(it) }
+        viewModel.apply {
+            resultLive.observe(viewLifecycleOwner) { viewAdapter.setItems(it) }
+            errorLive.observe(viewLifecycleOwner) { requireContext().showAlertDialog(it) }
+            progressLive.observe(viewLifecycleOwner) {
+                progress.isVisible = it
+                rv_main.isVisible = !it
+            }
+        }
     }
 
 }

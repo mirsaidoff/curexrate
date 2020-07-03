@@ -9,19 +9,23 @@ import uz.mirsaidoff.curexrate.data.Repository
 
 class MainViewModel(private val repository: Repository) : ViewModel() {
 
-    val resultLiveData by lazy { MutableLiveData<List<Rate>>() }
-    val errorLiveData by lazy { MutableLiveData<String>() }
+    val resultLive by lazy { MutableLiveData<List<Rate>>() }
+    val progressLive by lazy { MutableLiveData<Boolean>() }
+    val errorLive by lazy { MutableLiveData<String>() }
 
     fun getLatestExchangeRates(refresh: Boolean) {
         viewModelScope.launch {
+            progressLive.value = true
             try {
-                resultLiveData.value = repository.getRates(refresh)
+                resultLive.value = repository.getRates(refresh)
             } catch (ex: Exception) {
                 ex.printStackTrace()
                 var message = ex.message
                 if (message.isNullOrEmpty()) message =
                     "Oops, something went wrong. Please, try again!"
-                errorLiveData.value = message
+                errorLive.value = message
+            } finally {
+                progressLive.value = false
             }
         }
     }

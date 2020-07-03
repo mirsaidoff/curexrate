@@ -14,8 +14,9 @@ import java.util.*
 
 class DetailsViewModel(private val apiService: ApiService) : ViewModel() {
 
-    val resultLive: MutableLiveData<List<WeeklyRate>> by lazy { MutableLiveData<List<WeeklyRate>>() }
-    val errorLive: MutableLiveData<String> by lazy { MutableLiveData<String>() }
+    val resultLive: MutableLiveData<List<WeeklyRate>> = MutableLiveData()
+    val progressLive: MutableLiveData<Boolean> = MutableLiveData()
+    val errorLive: MutableLiveData<String> = MutableLiveData()
 
     @SuppressLint("SimpleDateFormat")
     fun getLastSevenDayUpdate(symbols: String?) {
@@ -29,6 +30,7 @@ class DetailsViewModel(private val apiService: ApiService) : ViewModel() {
 
         symbols?.apply {
             viewModelScope.launch {
+                progressLive.value = true
                 try {
                     val lastSevenDaysResult = apiService.getLastSevenDaysResult(
                         startAt = startDate,
@@ -36,7 +38,8 @@ class DetailsViewModel(private val apiService: ApiService) : ViewModel() {
                         symbols = this@apply
                     )
                     if (lastSevenDaysResult.isSuccessful) {
-                        resultLive.value = lastSevenDaysResult.body()?.getRates() ?: listOf()
+                        val list = lastSevenDaysResult.body()?.getRates() ?: listOf()
+                        resultLive.value = list
                     } else throw Exception(lastSevenDaysResult.message())
                 } catch (ex: Exception) {
                     ex.printStackTrace()
@@ -44,6 +47,8 @@ class DetailsViewModel(private val apiService: ApiService) : ViewModel() {
                     if (message.isNullOrEmpty()) message =
                         "No exchange rate data is available for the selected currency."
                     errorLive.value = message
+                } finally {
+                    progressLive.value = false
                 }
             }
         }
