@@ -9,7 +9,7 @@ import uz.mirsaidoff.curexrate.data.Repository
 
 class MainViewModel(private val repository: Repository) : ViewModel() {
 
-    val resultLive by lazy { MutableLiveData<List<Rate>>() }
+    val resultLive by lazy { repository.getAllSavedRates() }
     val progressLive by lazy { MutableLiveData<Boolean>() }
     val errorLive by lazy { MutableLiveData<String>() }
 
@@ -17,7 +17,7 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
         viewModelScope.launch {
             progressLive.value = true
             try {
-                resultLive.value = repository.getRates(refresh)
+                repository.updateRates(refresh)
             } catch (ex: Exception) {
                 ex.printStackTrace()
                 var message = ex.message

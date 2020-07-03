@@ -13,19 +13,18 @@ class Repository(
 
     private val dao = db.getDao()
 
-    suspend fun getRates(refresh: Boolean): List<Rate> {
+    suspend fun updateRates(refresh: Boolean) {
         val lastUpdateTime = pref.getLong("last_update_millis", 0)
         val diffSec = (System.currentTimeMillis() - lastUpdateTime) / 1000     //600 sec
         if (!refresh && lastUpdateTime != 0L && diffSec < 600) {
-            return getLastSavedRates()
+            return
         }
 
         val updatedRates = getUpdatedRates()
         updateDBValues(updatedRates)
-        return updatedRates
     }
 
-    private suspend fun getLastSavedRates() = dao.getAll()
+    fun getAllSavedRates() = dao.getAll()
 
     private suspend fun getUpdatedRates(): List<Rate> {
         val latestRates = apiService.getLatestRates()
